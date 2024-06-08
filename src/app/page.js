@@ -20,7 +20,6 @@ export default function Home() {
       console.log('This is my result', result);
       if (lastId === 0) {
         setRequests(result);
-        alert('result is empty');
       }
       else {
         requests.push(...result)

@@ -16,15 +16,36 @@ export async function doLogin() {
   return accounts[0];
 }
 
-export async function getOpenRequests(lastId = 0) {
-  if (!window.ethereum) throw new Error("Sem Metamask instalada!");
-
+function getContract() {
+  if (!window.ethereum) throw new Error("No Metamask wallet found!");
   const from = localStorage.getItem("wallet");
   const web3 = new Web3(window.ethereum);
+  return new web3.eth.Contract(ABI, CONTRACT_ADDRESS, { from });
+}
 
-  const contract = new web3.eth.Contract(ABI, CONTRACT_ADDRESS, { from });
+export async function getOpenRequests(lastId = 0) {
+
+  const contract = getContract();
 
   const requests = await contract.methods.getOpenRequests(lastId + 1, 10).call();
   // let's filter empty requests because the contract returns an array with 10 elements
   return requests.filter(rq => rq.title !== "");
+}
+
+export async function openRequest({ title, description, contact, goal }) {
+  const contract = getContract();
+
+  return contract.methods.openRequest(title, description, contact, Web3.utils.toWei(goal, "ether")).send();
+}
+
+export async function closeRequest(id) {
+  const contract = getContract();
+  return contract.methods.closeRequest(id).send();
+}
+
+export async function donate(id, donationInBNB) {
+  const contract = getContract();
+  return contract.methods.donate(id).send({
+    value: Web3.utils.toWei(donationInBNB, "ether")
+  });
 }
