@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer"
+import Request from "@/components/Request";
 import { getOpenRequests } from "@/services/Web3Service";
 
 export default function Home() {
@@ -23,9 +24,8 @@ export default function Home() {
       }
       else {
         requests.push(...result)
-        alert('result is not empty');
+        setRequests(requests);
       }
-      setRequests(requests);
     }
     catch (err) {
       console.error(err);
